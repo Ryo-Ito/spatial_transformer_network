@@ -1,5 +1,5 @@
 import tensorflow as tf
-from grid import batch_mgrid2d, batch_mgrid3d
+from grid import batch_mgrid
 from warp import warp2d, warp3d
 
 
@@ -25,7 +25,7 @@ def displacement_warp2d(imgs, vector_fields):
     xlen = tf.shape(imgs)[1]
     ylen = tf.shape(imgs)[2]
 
-    grids = batch_mgrid2d(xlen, ylen, n_batch=n_batch)
+    grids = batch_mgrid(n_batch, xlen, ylen)
 
     T_g = grids + vector_fields
     output = warp2d(imgs, T_g)
@@ -55,7 +55,7 @@ def displacement_warp3d(imgs, vector_fields):
     ylen = tf.shape(imgs)[2]
     zlen = tf.shape(imgs)[3]
 
-    grids = batch_mgrid3d(xlen, ylen, zlen, n_batch=n_batch)
+    grids = batch_mgrid(n_batch, xlen, ylen, zlen)
 
     T_g = grids + vector_fields
     output = warp3d(imgs, T_g)

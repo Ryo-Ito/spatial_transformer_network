@@ -1,133 +1,61 @@
 import tensorflow as tf
 
 
-def mgrid2d(xlen, ylen, low=-1., high=1.):
+def mgrid(*args, **kwargs):
     """
     create orthogonal grid
-    similart to np.mgrid
+    similar to np.mgrid
 
     Parameters
     ----------
-    xlen : int
-        number of points on x axis
-    ylen : int
-        number of points on y axis
+    args : int
+        number of points on each axis
     low : float
-        minimum coordinates
+        minimum coordinate value
     high : float
-        maximum coordinates
+        maximum coordinate value
 
     Returns
     -------
-    grid : tf.Tensor
-        [2, xlen, ylen]
+    grid : tf.Tensor [len(args), args[0], ...]
+        orthogonal grid
     """
+    low = kwargs.pop("low", -1)
+    high = kwargs.pop("high", 1)
     low = tf.to_float(low)
     high = tf.to_float(high)
-    x_coords = tf.linspace(low, high, xlen)
-    y_coords = tf.linspace(low, high, ylen)
-    zeros = tf.zeros([xlen, ylen])
-    x_t = zeros + tf.reshape(x_coords, [-1, 1])
-    y_t = zeros + tf.reshape(y_coords, [1, -1])
-
-    grid = tf.concat(0, [x_t, y_t])
-    return tf.reshape(grid, [2, xlen, ylen])
-
-
-def batch_mgrid2d(xlen, ylen, n_batch=1, low=-1., high=1.):
-    """
-    create orthogonal grids
-    similart to np.mgrid
-
-    Parameters
-    ----------
-    xlen : int
-        number of points for x axis
-    ylen : int
-        number of points for y axis
-    n_batch : int
-        number of grids to create
-    low : float
-        minimum value of coordinates
-    high : float
-        maximum value of coordinates
-
-    Returns
-    -------
-    grid : tf.Tensor
-        [n_batch, 2, xlen, ylen]
-    """
-    grid = mgrid2d(xlen, ylen, low, high)
-    grid = tf.expand_dims(grid, 0)
-    grid = tf.reshape(grid, [-1])
-    grid = tf.tile(grid, [n_batch])
-    grid = tf.reshape(grid, [n_batch, 2, xlen, ylen])
+    coords = (tf.linspace(low, high, arg) for arg in args)
+    grid = tf.pack(tf.meshgrid(*coords, indexing='ij'))
     return grid
 
 
-def mgrid3d(xlen, ylen, zlen, low=-1., high=1.):
+def batch_mgrid(n_batch, *args, **kwargs):
     """
-    almost equivalent to np.mgrid[:xlen, :ylen, :zlen]
+    create batch of orthogonal grids
+    similar to np.mgrid
 
     Parameters
     ----------
-    xlen : int
-        number of points on x axis
-    ylen : int
-        number of points on y axis
-    zlen : int
-        number of points on z axis
-    low : float
-        minimum value of coordinates
-    high : float
-        maximum value of coordinates
-
-    Returns
-    -------
-    grid : tf.Tensor
-        [3, xlen, ylen, zlen]
-    """
-    low = tf.to_float(low)
-    high = tf.to_float(high)
-    x_coords = tf.linspace(low, high, xlen)
-    y_coords = tf.linspace(low, high, ylen)
-    z_coords = tf.linspace(low, high, zlen)
-    zeros = tf.zeros([xlen, ylen, zlen])
-    x_t = zeros + tf.reshape(x_coords, [-1, 1, 1])
-    y_t = zeros + tf.reshape(y_coords, [1, -1, 1])
-    z_t = zeros + tf.reshape(z_coords, [1, 1, -1])
-
-    grid = tf.concat(0, [x_t, y_t, z_t])
-    return tf.reshape(grid, [3, xlen, ylen, zlen])
-
-
-def batch_mgrid3d(xlen, ylen, zlen, n_batch, low=-1., high=1.):
-    """
-    creates n_batch orthogonal grids
-
-    Parameters
-    ----------
-    xlen : int
-        number of points on x axis
-    ylen : int
-        number of points on y axis
-    zlen : int
-        number of points on z axis
     n_batch : int
         number of grids to create
+    args : int
+        number of points on each axis
     low : float
-        minimum value of coordinates
+        minimum coordinate value
     high : float
-        maximum value of coordinates
+        maximum coordinate value
 
     Returns
     -------
-    grids : tf.Tensor
-        [n_batch, 3, xlen, ylen, zlen]
+    grids : tf.Tensor [n_batch, len(args), args[0], ...]
+        batch of orthogonal grids
     """
-    grid = mgrid3d(xlen, ylen, zlen, low, high)
+    grid = mgrid(*args, **kwargs)
     grid = tf.expand_dims(grid, 0)
-    grid = tf.reshape(grid, [-1])
-    grid = tf.tile(grid, [n_batch])
-    grid = tf.reshape(grid, [n_batch, 3, xlen, ylen, zlen])
-    return grid
+    grids = tf.tile(grid, [n_batch] + [1 for _ in xrange(len(args) + 1)])
+    return grids
+
+
+if __name__ == '__main__':
+    with tf.Session() as sess:
+        print sess.run(batch_mgrid(2, 5, 4))
