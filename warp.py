@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 
-def warp2d(imgs, mappings):
+def batch_warp2d(imgs, mappings):
     """
     warp image using mapping function
     I(x) -> I(phi(x))
@@ -33,7 +33,7 @@ def warp2d(imgs, mappings):
     return output
 
 
-def warp3d(imgs, mappings):
+def batch_warp3d(imgs, mappings):
     """
     warp image using mapping function
     I(x) -> I(phi(x))

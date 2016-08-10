@@ -1,9 +1,9 @@
 import tensorflow as tf
 from grid import batch_mgrid
-from warp import warp2d, warp3d
+from warp import batch_warp2d, batch_warp3d
 
 
-def displacement_warp2d(imgs, vector_fields):
+def batch_displacement_warp2d(imgs, vector_fields):
     """
     warp images by free form transformation
 
@@ -28,11 +28,11 @@ def displacement_warp2d(imgs, vector_fields):
     grids = batch_mgrid(n_batch, xlen, ylen)
 
     T_g = grids + vector_fields
-    output = warp2d(imgs, T_g)
+    output = batch_warp2d(imgs, T_g)
     return output
 
 
-def displacement_warp3d(imgs, vector_fields):
+def batch_displacement_warp3d(imgs, vector_fields):
     """
     warp images by displacement vector fields
 
@@ -58,5 +58,5 @@ def displacement_warp3d(imgs, vector_fields):
     grids = batch_mgrid(n_batch, xlen, ylen, zlen)
 
     T_g = grids + vector_fields
-    output = warp3d(imgs, T_g)
+    output = batch_warp3d(imgs, T_g)
     return output

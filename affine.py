@@ -3,7 +3,7 @@ from grid import batch_mgrid
 from warp import warp2d, warp3d
 
 
-def affine_warp2d(imgs, theta):
+def batch_affine_warp2d(imgs, theta):
     """
     affine transforms 2d images
 
@@ -38,7 +38,7 @@ def affine_warp2d(imgs, theta):
     return output
 
 
-def affine_warp3d(imgs, theta):
+def batch_affine_warp3d(imgs, theta):
     """
     affine transforms 3d images
 
@@ -105,8 +105,8 @@ if __name__ == '__main__':
     img = tf.to_float(np.arange(25).reshape(1, 5, 5, 1))
     identity_matrix = tf.to_float([1, 0, 0, 0, 1, 0])
     zoom_in_matrix = identity_matrix * 0.5
-    identity_warped = affine_warp2d(img, identity_matrix)
-    zoom_in_warped = affine_warp2d(img, zoom_in_matrix)
+    identity_warped = batch_affine_warp2d(img, identity_matrix)
+    zoom_in_warped = batch_affine_warp2d(img, zoom_in_matrix)
     with tf.Session() as sess:
         print sess.run(img[0, :, :, 0])
         print sess.run(identity_warped[0, :, :, 0])
