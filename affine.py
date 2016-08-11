@@ -1,6 +1,6 @@
 import tensorflow as tf
 from grid import batch_mgrid
-from warp import warp2d, warp3d
+from warp import batch_warp2d, batch_warp3d
 
 
 def batch_affine_warp2d(imgs, theta):
@@ -34,7 +34,7 @@ def batch_affine_warp2d(imgs, theta):
 
     T_g = tf.batch_matmul(matrix, coords) + t
     T_g = tf.reshape(T_g, [n_batch, 2, xlen, ylen])
-    output = warp2d(imgs, T_g)
+    output = batch_warp2d(imgs, T_g)
     return output
 
 
@@ -70,7 +70,7 @@ def batch_affine_warp3d(imgs, theta):
 
     T_g = tf.batch_matmul(matrix, grids) + t
     T_g = tf.reshape(T_g, [n_batch, 3, xlen, ylen, zlen])
-    output = warp3d(imgs, T_g)
+    output = batch_warp3d(imgs, T_g)
     return output
 
 
